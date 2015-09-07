@@ -2,6 +2,10 @@
 *.*~
 #*.*#
 
+## Mac OS X files
+.DS_Store
+._*
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
