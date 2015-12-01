@@ -78,8 +78,45 @@ The game has two basic mechanics: \\
 \textbf{Start -> Scene Description -> Action input -> Action Response -> Direction input -> New Scene Description}
 
 \chapter{Level Design}
-\section{Themes}
-\section{Game Flow}
+
+\textit{Keeper's Call} features a very simple environment with two thematic elements, and a simple story outline.
+
+\section{Thematic Elements}
+
+\begin{enumerate}
+\item The Lake
+  \begin{enumerate}
+  \item Location
+    \begin{enumerate}
+    \item Scottish Loch
+    \end{enumerate}
+  \item Weather
+    \begin{enumerate}
+    \item Overcast
+    \end{enumerate}
+  \item Ambience
+    \begin{enumerate}
+    \item Opaque water
+    \item Cool, cold
+    \item Misty
+    \end{enumerate}
+  \end{enumerate}
+\item The Forest
+  \begin{enumerate}
+  \item Location
+    \begin{enumerate}
+    \item Surrounds The Lake
+    \end{enumerate}
+  \item Ambience
+    \begin{enumerate}
+    \item Dark, dim
+    \item Rustling noises
+    \item Wind or breeze can be heard
+    \end{enumerate}
+  \end{enumerate}
+\end{enumerate}
+
+\section{Story Flow}
 
 \chapter{Development}
 
@@ -87,7 +124,90 @@ Development will happen in two phases: underlying engine and game proper.
 
 \section{Fabler}
 
-\textit{Fabler} is the name of the game engine itself. It is a simple graphically-rendered text engine for interactive fiction. It is written in JavaScript.
+\textit{Fabler} is the name of the game engine itself. It is a simple graphically-rendered text engine for interactive fiction. It is written in JavaScript. 
+
+\subsection{Architecture}
+
+\textit{Components} drive the functionality of the engine internals. Each feature will be implemented as component object that can be plugged in to the engine framework. Additional features mean additional components, which can be tested individually.
+
+The text will be rendered graphically onto a \texttt{Canvas}, and input taken by key strokes. Input will be collected by an input listener, then fed to a command parser. The parser will take the input and interpret the instructions. Any changes to the game environment will be requested through the engine by the parser. 
+
+Command parsing will be simple: instructions are one word, and can have one or more arguments afterwards. Each command will correspond to a function that will accept the arguments. 
+
+The game loop will be responsible for orchestrating the mechanics, input and display rendering. The game loop should be supplied by the game implementation, with a simple skeleton structure provided by Fabler.
+
+\subsection{Command Parser}
+
+There will be a simple command parser (outlined above), that will accept input in the following format:
+
+\begin{center}
+  \framebox[1.1\width][c]{\texttt{[command] + \textvisiblespace{}  +  ([argument$_1$] \textvisiblespace{}  [argument$_2$] \textvisiblespace{}  ... [argument$_n$])}}
+\end{center}
+
+The processing of input looks similar to the following:
+
+\begin{center}
+  \framebox[1.1\width]{\textit{Raw text input}} \\
+  \vspace{\fill}
+  {\large $\downarrow$} \\
+  \vspace{\fill}
+  \framebox[1.1\width]{\texttt{Parser} $\rightarrow$ \texttt{Tokeniser} --- \texttt{command + [arg$_1$\ldots{}arg$_n$]}} \\
+  \vspace{\fill}
+  {\large $\downarrow$} \\
+  \vspace{\fill}
+  \framebox[1.1\width]{\texttt{CommandExecutor} $\rightarrow$ \textit{Execute function} --- \texttt{command(arg$_1$,\ldots{}arg$_n$)}} \\
+  \vspace{\fill}
+  {\large $\downarrow$} \\
+  \vspace{\fill}
+  \framebox[1.1\width]{\textit{Game loop increment}} \\
+\end{center}
+
+\subsubsection{Dictionary}
+The proposed list of commands is as follows. In addition to commands and arguments, there will be necessary tokens to make a phrase or sentence grammatical, but is irrelevant to the command itself. These will be removed during parsing, but available to the end user.
+
+\begin{center}
+  \begin{tabular}{c} 
+    \toprule
+    \textit{Commands} \\
+    \midrule
+    \texttt{go} \\
+    \texttt{look} \\
+    \texttt{take} \\
+    \texttt{open} \\
+    \texttt{read} \\
+    \texttt{talk} \\
+    \texttt{listen} \\
+    \bottomrule
+  \end{tabular}
+  \hspace{\fill}
+  \begin{tabular}{c} 
+    \toprule
+    \textit{Directions} \\
+    \midrule
+    \texttt{forward} \\
+    \texttt{back} \\
+    \texttt{left} \\
+    \texttt{right} \\
+    \bottomrule
+  \end{tabular}
+  \hspace{\fill}
+  \begin{tabular}{c} 
+    \toprule
+    \textit{Tokens} \\
+    \midrule
+    a(n) \\
+    the \\
+    of \\
+    to \\
+    in \\
+    on \\
+    for \\
+    with \\
+    ---(')s \\
+    \bottomrule
+  \end{tabular}
+
+\end{center}
 
 \subsection{Components}
 \begin{itemize}
@@ -103,20 +223,101 @@ Development will happen in two phases: underlying engine and game proper.
   \item Player
   \item Location
   \item World
+  \item Input
+  \item Parser
+  \item Event
+  \item Item
   \end{itemize}
 \end{itemize}
 
 \section{Game Program}
-\subsection{Components}
-\subsection{Component Compositions}
+
+\subsection{Application Container}
+
+The game will run on the \textit{Fabler} engine, encapsulated in an embedded \textit{Chromium} instance, and will be written in JavaScript.
+
+\subsection{Startup}
+
+Upon launch, the game will run in full screen\footnote{This may requiring prompting the user with a dialogue confirmation}, presenting itself as on old terminal console.
+
+\subsection{Game Loop}
+
+The game loop is managed by \textit{Fabler}, but the creation of all assets, story points and game flow will be hard--coded into the game program for simplicity. We will not be concerned with portability or ease of modification.
+
+\subsection{Shutdown}
+
+The game will exit by either the successful completion of the story, or the player entering an appropriate command in the terminal.
 
 \chapter{Development Timeline}
 
+Total project estimate is \textbf{30 hours}.
+
+\section{September 2015}
+
+\begin{itemize}
+\item Game concept is agreed upon, and pre--production begins
+\item Brainstorming results in the majority of game design outlining 
+\item GDD begun and developed
+\end{itemize}
+
+\section{October 2015}
+
+\begin{itemize}
+\item Pre--production grinds to a halt as team members are distracted with illness, work and other pursuits
+\item Some amount of tinkering with the GDD and server ensues
+\end{itemize}
+
+\section{November 2015}
+
+\begin{itemize}
+\item Pre--production resumes with the finalising of the GDD
+\end{itemize}
+
+\section{December 2015}
+
+Starting with this month, development time is assumed to be \textbf{1-3 hours per week}.
+
+\begin{itemize}
+\item Production begins on the Fabler engine
+\item Production begins on the box an manual art
+\item Production begins on the story assets
+\item Some early testing of the running game engine begins
+\end{itemize}
+
+\section{January 2016}
+
+\begin{itemize}
+\item Testing begins of the game in the engine
+\item Final assets assembled into game
+\item Full game is tested and refined
+\end{itemize}
+
+\section{February 2016}
+\begin{itemize}
+\item Game is released to manufacturer
+\item Marketing material is created
+\item Manuals are created
+\item Final packaging completed
+\item Game published
+\end{itemize}
 \chapter{Proposals}
 
 Please place proposals in new sections with any relevant and necessary information. If a proposal is adopted, ensure that it is added/incorporated into the relevant section. If discarded, please add it to the \textit{Rejected Ideas} chapter, along with the discussion or reasoning.
 
+\section{Brainstorming Notes}
+
+These represent the areas agreed upon. Extra brainstorming notes available in the documents for Keeper's Call.
+
+\begin{itemize}
+\item Girl is the keeper of the Loch Ness monster
+\item Game is entitled \textit{Keeper's Call}
+\item Nessie calls out. We want to avoid something inherent about the girl that makes Nessie want to reach out. We can allow readers to believe she is worthy, but gradually her flaws are revealed
+\end{itemize}
+
 \chapter{Rejected Ideas}
 
+\section{Hergen, Bergen, Fergen}
+
+With an option on \textit{Dergen}. 
 
 \end{document}
